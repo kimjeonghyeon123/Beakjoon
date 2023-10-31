@@ -22,6 +22,8 @@ public class Greedy2 {
                 N -= a;
                 count += a;
             }
+            int a = N % K;
+            count++;
         }
 
         bw.write(String.valueOf(count));
