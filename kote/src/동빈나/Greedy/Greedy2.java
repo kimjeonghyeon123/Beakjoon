@@ -1,4 +1,4 @@
-package 동빈나;
+package 동빈나.Greedy;
 
 import java.io.*;
 import java.util.*;

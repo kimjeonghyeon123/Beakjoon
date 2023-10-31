@@ -1,23 +1,23 @@
-package 동빈나;
+package 동빈나.Implementation;
 
 import java.io.*;
 
-public class Greedy1 {
+public class Implementation {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
-        int N = Integer.parseInt(br.readLine());
+        // 동, 북, 서, 남
+        int[] dx = {0, -1, 0, 1};
+        int[] dy = {1, 0, -1, 0};
 
-        int[] arr = {500, 100, 50, 10};
+        int x = 2, y = 2;
 
-        int count = 0;
-        for(int i : arr) {
-            count += N / i;
-            N %= i;
+        int nx, ny;
+        for(int i = 0; i < 4; i++) {
+            nx = x + dx[i];
+            ny = x + dy[i];
         }
-
-        bw.write(String.valueOf(count));
 
         bw.flush();
         bw.close();

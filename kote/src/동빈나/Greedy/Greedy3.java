@@ -1,4 +1,4 @@
-package 동빈나;
+package 동빈나.Greedy;
 
 import java.io.*;
 import java.util.*;
@@ -20,7 +20,7 @@ public class Greedy3 {
                 result *= num;
             }
         }
-        
+
         bw.write(String.valueOf(result));
         bw.flush();
         bw.close();
