@@ -5,35 +5,54 @@ import java.util.*;
 
 public class 음료수얼려먹기 {
 
-    public static boolean[][] visited;
+    public static int N, M;
+    public static int[][] graph = new int[1000][1000];
+
+    public static boolean dfs(int x, int y) {
+        if(x <= -1 || x >= N || y <= -1 || y >= M) {
+            return false;
+        }
+
+        //방문하지 않았다면
+        if(graph[x][y] == 0) {
+            //방문 처리
+            graph[x][y] = 1;
+
+            dfs(x - 1, y);
+            dfs(x + 1, y);
+            dfs(x, y - 1);
+            dfs(x, y + 1);
+            return true;
+        }
+        return false;
+    }
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
         StringTokenizer st = new StringTokenizer(br.readLine());
-        int N = Integer.parseInt(st.nextToken());
-        int M = Integer.parseInt(st.nextToken());
-        visited = new boolean[N+1][M+1];
-        for(int i = 1; i <= N; i++) {
-            String[] arr = br.readLine().split("");
+
+        N = Integer.parseInt(st.nextToken());
+        M = Integer.parseInt(st.nextToken());
+
+        for(int i = 0; i < N; i++) {
+            String str = br.readLine();
             for(int j = 0; j < M; j++) {
-                if(arr[j] == "0"){
-                    visited[i][j+1] = false;
-                }
-                else {
-                    visited[i][j+1] = true;
-                }
-
+                graph[i][j] = str.charAt(j) - '0';
             }
         }
 
-        for(int i = 1; i <= N; i++) {
-            for (int j = 1; j <= M; j++) {
-                System.out.print(visited[i][j] + " ");
+        int result = 0;
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < M; j++) {
+                if(dfs(i, j)) {
+                    result += 1;
+                }
             }
-            System.out.println();
         }
+
+        bw.write(String.valueOf(result));
         bw.flush();
         bw.close();
     }
