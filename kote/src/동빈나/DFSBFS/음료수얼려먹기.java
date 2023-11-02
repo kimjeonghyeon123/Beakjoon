@@ -6,18 +6,15 @@ import java.util.*;
 public class 음료수얼려먹기 {
 
     public static int N, M;
-    public static int[][] graph = new int[1000][1000];
+    public static int[][] graph;
 
     public static boolean dfs(int x, int y) {
-        if(x <= -1 || x >= N || y <= -1 || y >= M) {
+        if (x <= -1 || x >= N || y <= -1 || y >= M) {
             return false;
         }
 
-        //방문하지 않았다면
         if(graph[x][y] == 0) {
-            //방문 처리
             graph[x][y] = 1;
-
             dfs(x - 1, y);
             dfs(x + 1, y);
             dfs(x, y - 1);
@@ -35,10 +32,11 @@ public class 음료수얼려먹기 {
 
         N = Integer.parseInt(st.nextToken());
         M = Integer.parseInt(st.nextToken());
+        graph = new int[N][M];
 
-        for(int i = 0; i < N; i++) {
+        for (int i = 0; i < N; i++) {
             String str = br.readLine();
-            for(int j = 0; j < M; j++) {
+            for (int j = 0; j < M; j++) {
                 graph[i][j] = str.charAt(j) - '0';
             }
         }
