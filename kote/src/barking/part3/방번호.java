@@ -12,8 +12,8 @@ public class 방번호 {
 
         int[] arr = new int[10];
 
-        for(int i=0;i<N.length();i++) {
-            int num = N.charAt(i) - 48;
+        for(int i = 0; i < N.length(); i++) {
+            int num = N.charAt(i) - '0';
             if(num == 6)
                 arr[9]++;
             else
@@ -27,7 +27,9 @@ public class 방번호 {
         }
 
         Arrays.sort(arr);
-        bw.write(String.valueOf(arr[arr.length - 1]));
+        bw.write(String.valueOf(arr[9]));
+
+
         bw.flush();
         bw.close();
     }

@@ -3,6 +3,7 @@ package 동빈나.DFSBFS;
 import java.io.*;
 import java.util.*;
 
+// 모든 노드를 다 확인하고 싶을 때 사용
 public class DFS {
 
     public static boolean[] visited = new boolean[9];

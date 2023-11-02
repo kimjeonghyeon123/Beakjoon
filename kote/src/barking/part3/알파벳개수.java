@@ -7,21 +7,18 @@ public class 알파벳개수 {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
-        String s = br.readLine();
-        int len = 'z' - 'a' + 1;
-        int[] arr = new int[len];
+        String str = br.readLine();
 
-        for (int i = 0; i < len; i++) {
-            for (int j = 0; j < s.length(); j++) {
-                if (i == s.charAt(j) - 'a') {
-                    arr[i]++;
+        for(int i = 'a'; i <= 'z'; i++) {
+            int cnt = 0;
+            for (int j = 0; j < str.length(); j++) {
+                if(str.charAt(j) == i) {
+                    cnt++;
                 }
             }
+            bw.write(cnt + " ");
         }
 
-        for (int i : arr) {
-            bw.write(Integer.toString(i) + " ");
-        }
         bw.flush();
         bw.close();
     }

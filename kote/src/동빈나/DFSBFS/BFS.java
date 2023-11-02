@@ -3,6 +3,7 @@ package 동빈나.DFSBFS;
 import java.io.*;
 import java.util.*;
 
+// 최단 경로 문제를 할 때 주로 사용
 public class BFS {
 
     public static boolean[] visited = new boolean[9];

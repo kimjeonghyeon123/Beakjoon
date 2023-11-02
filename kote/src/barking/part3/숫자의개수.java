@@ -11,18 +11,17 @@ public class 숫자의개수 {
         int B = Integer.parseInt(br.readLine());
         int C = Integer.parseInt(br.readLine());
 
-        String str = Integer.toString(A * B * C);
+        String str = String.valueOf(A * B * C);
 
-        for (char i = '0'; i <= '9'; i++) {
-            int count = 0;
+        for (int i = 0; i <= 9; i++) {
+            int cnt = 0;
             for (int j = 0; j < str.length(); j++) {
-                if (i == str.charAt(j)) {
-                    count++;
+                if(str.charAt(j) - '0' == i) {
+                    cnt++;
                 }
             }
-            bw.write(String.valueOf(count) + "\n");
+            bw.write(String.valueOf(cnt) + "\n");
         }
-
         bw.flush();
         bw.close();
     }
