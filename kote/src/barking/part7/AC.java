@@ -4,79 +4,77 @@ import java.io.*;
 import java.util.*;
 
 public class AC {
+
+    static Deque<Integer> dq = new LinkedList<>();
+    static StringBuilder sb = new StringBuilder();
+
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
         int T = Integer.parseInt(br.readLine());
-
-        StringBuilder sb = new StringBuilder();
         for (int i = 0; i < T; i++) {
-            String[] commands = br.readLine().split("");
+            String commands = br.readLine();
             int len = Integer.parseInt(br.readLine());
-            String[] str = br.readLine().replace("[", "").replace("]", "").split(",");
-            LinkedList<Integer> dq = new LinkedList<>();
-            for(int j = 0; j < len; j++) {
-                dq.offerLast(Integer.parseInt(str[j]));
+
+            StringTokenizer st = new StringTokenizer(br.readLine(), "[],");
+            while (st.hasMoreTokens()) {
+                dq.offerLast(Integer.parseInt(st.nextToken()));
             }
 
-            boolean reverse = false;
-            boolean err = false;
-            for(int j = 0; j < commands.length; j++) {
-                switch(commands[j]) {
-                    case "R":
-                        if(reverse) {
-                            reverse = false;
-                        } else {
-                            reverse = true;
-                        }
-                        break;
-                    case "D":
-                        if(dq.isEmpty()) {
-                            err = true;
-                        }
-                        else {
-                            if(reverse) {
-                                dq.pollLast();
-                            } else {
-                                dq.pollFirst();
-                            }
-                        }
-                        break;
-                }
-                if(err) {
-                    break;
-                }
-            }
-
-
-            if(err) {
-                sb.append("error\n");
-            }
-            else {
-                sb.append("[");
-                if(reverse) {
-                    while(true) {
-                        sb.append(dq.pollLast() + ",");
-                        if (dq.size() == 1) {
-                            sb.append(dq.pollLast() + "]\n");
-                            break;
-                        }
-                    }
-                } else {
-                    while(true) {
-                        sb.append(dq.pollFirst() + ",");
-                        if (dq.size() == 1) {
-                            sb.append(dq.pollFirst() + "]\n");
-                            break;
-                        }
-                    }
-                }
-            }
+            AC(commands);
         }
 
         bw.write(sb.toString());
         bw.flush();
         bw.close();
+    }
+
+    static void AC(String commands) {
+
+        boolean reverse = false;
+        for(int i = 0; i < commands.length(); i++) {
+            if (commands.charAt(i) == 'R') {
+                reverse = !reverse;
+                continue;
+            }
+
+            if(reverse) {
+                if(dq.pollLast() == null) {
+                    sb.append("error\n");
+                    return;
+                }
+            }
+            else {
+                if(dq.pollFirst() == null) {
+                    sb.append("error\n");
+                    return;
+                }
+            }
+        }
+        makePrintString(reverse);
+    }
+
+    static void makePrintString(boolean reverse) {
+        sb.append("[");
+
+        if(!dq.isEmpty()) {
+            if(reverse) {
+                sb.append(dq.pollLast());
+
+                while(!dq.isEmpty()) {
+                    sb.append(",").append(dq.pollLast());
+                }
+            }
+            else {
+                sb.append(dq.pollFirst());
+
+                while(!dq.isEmpty()) {
+                    sb.append(",").append(dq.pollFirst());
+                }
+            }
+        }
+
+        sb.append("]\n");
     }
 }
