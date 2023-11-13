@@ -15,32 +15,19 @@ public class 괄호의값 {
         int temp = 1;
         boolean isPop = false;
         for(char c : str.toCharArray()) {
-            if(c == '(' || c == '[') {
+            if(c == '(') {
                 stack.push(c);
-                isPop = false;
-                continue;
+                numStack.push(2);
             }
-
-            if(c == ')') {
-                if (isPop) {
-                    temp += 2;
-                }
-                else {
-                    if(temp == 1) {
-                        total += 2;
-                    }
-                    total *= temp;
-                }
+            else if(c == '[') {
+                stack.push(c);
+                numStack.push(3);
             }
             else {
-                if (isPop) {
-                    temp *= 3;
-                }
-                else {
-                    total += temp;
+                if (c == ')') {
+
                 }
             }
-            isPop = true;
         }
         bw.flush();
         bw.close();
