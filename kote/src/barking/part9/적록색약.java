@@ -3,6 +3,8 @@ package barking.part9;
 import java.io.*;
 import java.util.*;
 
+
+// 공부하기
 public class 적록색약 {
 
     private static int N;
