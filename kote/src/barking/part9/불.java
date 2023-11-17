@@ -17,7 +17,6 @@ class Node {
 }
 
 public class 불 {
-
     private static int R, C;
     private static int[][] graph;
     private static int[] dx = {0, 0, 1, -1};
@@ -56,7 +55,7 @@ public class 불 {
         }
 
         int t = bfs();
-        if(t == 0) {
+        if(t == -1) {
             bw.write("IMPOSSIBLE");
         }
         else {
@@ -68,62 +67,55 @@ public class 불 {
 
     private static int bfs() {
 
-        int count = 0;
-
+        int size = 0;
         while(!jq.isEmpty()) {
-            Node jnode = jq.poll();
-            int x = jnode.getX();
-            int y = jnode.getY();
-
-            if(graph[x][y] == -2) {
-                if(jq.isEmpty()) {
-                    return 0;
-                }
-                continue;
-            }
-
-            if(x == 0 || y == 0 || x == R - 1 || y == C - 1) {
-                if(count < graph[x][y])
-                    count = graph[x][y];
-                continue;
-            }
-
-            for(int i = 0; i < 4; i++) {
-                int nx = x + dx[i];
-                int ny = y + dy[i];
-
-                if(nx < 0 || nx >= R || ny < 0 || ny >= C) {
+            size = jq.size();
+            for(int i = 0; i < size; i++) {
+                Node node = jq.poll();
+                int x = node.getX();
+                int y = node.getY();
+                if(graph[x][y] == -2) {
                     continue;
                 }
-                if(graph[nx][ny] == -1 || graph[nx][ny] == -2) {
-                    continue;
-                }
+                for(int j = 0; j < 4; j++) {
+                    int nx = x + dx[j];
+                    int ny = y + dy[j];
 
-                if (graph[nx][ny] == 0) {
-                    graph[nx][ny] = graph[x][y] + 1;
-                    jq.offer(new Node(nx, ny));
+                    if(nx < 0 || nx >= R || ny < 0 || ny >= C) {
+                        return graph[x][y];
+                    }
+                    if(graph[nx][ny] == -1 || graph[nx][ny] == -2) {
+                        continue;
+                    }
+                    if(graph[nx][ny] == 0) {
+                        graph[nx][ny] = graph[x][y] + 1;
+                        jq.offer(new Node(nx, ny));
+                    }
                 }
             }
 
+            size = fq.size();
+            for(int i = 0; i < size; i++) {
+                Node node = fq.poll();
+                int x = node.getX();
+                int y = node.getY();
 
-            Node fnode = fq.poll();
-            x = fnode.getX();
-            y = fnode.getY();
+                for(int j = 0; j < 4; j++) {
+                    int nx = x + dx[j];
+                    int ny = y + dy[j];
 
-            for(int i = 0; i < 4; i++) {
-                int nx = x + dx[i];
-                int ny = y + dy[i];
-
-                if(nx < 0 || nx >= R || ny < 0 || ny >= C) {
-                    continue;
-                }
-                if(graph[nx][ny] != -1 && graph[nx][ny] != -2) {
+                    if(nx < 0 || nx >= R || ny < 0 || ny >= C) {
+                        continue;
+                    }
+                    if(graph[nx][ny] == -1 || graph[nx][ny] == -2) {
+                        continue;
+                    }
                     graph[nx][ny] = -2;
                     fq.offer(new Node(nx, ny));
                 }
             }
         }
 
-        return count;
+        return -1;
     }
 }
