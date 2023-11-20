@@ -9,12 +9,6 @@ public class Main4 {
         int N = Integer.parseInt(st.nextToken());
         int W = Integer.parseInt(st.nextToken());
 
-        LinkedList<LinkedList<String>> list = new LinkedList<>();
-        for(int i = 0; i < N; i++) {
-            String[] str = br.readLine().split(" ");
-            for(int j = 0; j < N; j++) {
-                list.add();
-            }
-        }
+
     }
 }

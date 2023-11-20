@@ -26,9 +26,6 @@ public class Main1 {
         // 강둑에 남겨지면 안 되는 조합 개수
         int t = Integer.parseInt(br.readLine());
 
-        for(int i = 0; i < t; i++) {
-            Queue<>
-        }
     }
 
 }
