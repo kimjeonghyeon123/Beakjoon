@@ -52,7 +52,7 @@ public class 토마토 {
                     continue;
                 }
 
-                if(graph[nx][ny] == 0 || graph[nx][ny] > graph[x][y] + 1) {
+                if(graph[nx][ny] == 0 /*|| graph[nx][ny] > graph[x][y] + 1*/) {
                     graph[nx][ny] = graph[x][y] + 1;
                     q.offer(new Node(nx, ny));
                 }
