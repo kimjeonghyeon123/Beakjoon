@@ -3,7 +3,10 @@ package barking.part9;
     수빈 N
     동생 K
     수빈 -> x+1 or x-1 or 2*x
-    bfs로 방문한 곳 방문 안하면서 가보기
+    bfs
+    1    5
+    2 4 5
+    +하는 방법보다 *2하는 법이 더 좋음
 */
 
 import java.io.*;
@@ -14,7 +17,6 @@ public class 숨바꼭질3 {
     public static final int MAX = 100001;
     public static int N, K;
     public static int[] graph = new int[MAX];
-    public static boolean[] visited = new boolean[MAX];
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -24,30 +26,31 @@ public class 숨바꼭질3 {
         K = Integer.parseInt(st.nextToken());
 
         Queue<Integer> q = new LinkedList<>();
+
+        Arrays.fill(graph, MAX);
         q.offer(N);
-        visited[N] = true;
+        graph[N] = 0;
 
         while(!q.isEmpty()) {
-            int num = q.poll();
+            int now = q.poll();
+            if(now == K) {break;}
 
-            if(num == K) {break;}
-            if(num + 1 < MAX && !visited[num+1]) {
-                q.offer(num+1);
-                graph[num+1] = Math.max(graph[num+1], graph[num] + 1);
-                visited[num+1] = true;
+            int next = now + 1;
+            if(next < MAX && graph[next] > graph[now] + 1) {
+                q.offer(next);
+                graph[next] = graph[now] + 1;
             }
-            if(num - 1 >= 0 && num - 1 < MAX && !visited[num-1]) {
-                q.offer(num-1);
-                graph[num-1] = Math.max(graph[num-1], graph[num] + 1);
-                visited[num-1] = true;
+            next = now - 1;
+            if(next >= 0 && next < MAX && graph[next] > graph[now] + 1) {
+                q.offer(next);
+                graph[next] = graph[now] + 1;
             }
-            if(num * 2 < MAX && !visited[num*2]) {
-                q.offer(num*2);
-                graph[num*2] = Math.max(graph[num*2], graph[num]);
-                visited[num*2] = true;
+            next = now * 2;
+            if(next < MAX && graph[next] > graph[now]) {
+                q.offer(next);
+                graph[next] = graph[now];
             }
         }
-
         System.out.println(graph[K]);
     }
 }
