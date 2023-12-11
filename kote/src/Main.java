@@ -1,26 +1,33 @@
+/**
+ * 인접한 수가 1 차이
+ * d[i][k] : i 자리에 k 수가 오는 경우의 수
+ * d[i][k] = d[i-1][k+1] + 1 이거나 d[i-1][k-1]+1;
+ */
+
 import java.io.*;
 import java.util.*;
 
-class Node {
-    private int x, y, cnt;
-    private boolean destroyed;
-    public Node(int x, int y, int cnt, boolean destroyed) {
-        this.x = x;
-        this.y = y;
-        this.cnt = cnt;
-        this.destroyed = destroyed;
+class Node implements Comparable<Node> {
+    int index;
+    int distance;
+
+    public Node(int index, int distance) {
+        this.index = index;
+        this.distance = distance;
     }
-    public int getX() {return x;}
-    public int getY() {return y;}
-    public int getCnt() {return cnt;}
-    public boolean isDestroyed() {return destroyed;}
+    @Override
+    public int compareTo(Node other) {
+        if(distance < other.distance) {
+            return -1;
+        }
+        return 1;
+    }
 }
 class Main {
-    public static int N, M;
-    public static int[][] graph;
-    public static boolean[][][] visited;
-    public static int[] dx = {0, 0, -1, 1};
-    public static int[] dy = {-1, 1, 0, 0};
+    public static final int INF = (int) 1e9;
+    public static int N, M, X;
+    public static ArrayList<ArrayList<Node>> graph = new ArrayList<>();
+    public static int[] d;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -28,57 +35,56 @@ class Main {
         StringTokenizer st = new StringTokenizer(br.readLine());
         N = Integer.parseInt(st.nextToken());
         M = Integer.parseInt(st.nextToken());
+        X = Integer.parseInt(st.nextToken());
 
-        graph = new int[N][M];
-        visited = new boolean[N][M][2];
-        for(int i = 0; i < N; i++) {
-            String str = br.readLine();
-            for(int j = 0; j < M; j++) {
-                graph[i][j] = str.charAt(j) - '0';
-            }
+        for(int i = 0; i <= N; i++) {
+            graph.add(new ArrayList<>());
         }
 
-        System.out.println(bfs());
+        for(int i = 0; i < M; i++) {
+            st = new StringTokenizer(br.readLine());
+            int x = Integer.parseInt(st.nextToken());
+            int y = Integer.parseInt(st.nextToken());
+            int z = Integer.parseInt(st.nextToken());
+            graph.get(x).add(new Node(y, z));
+        }
+
+        int[] go = new int[N+1];
+        for(int i = 1; i <= N; i++) {
+            d = new int[N+1];
+            Arrays.fill(d, INF);
+            dijkstra(i);
+            go[i] = d[X];
+        }
+        d = new int[N+1];
+        Arrays.fill(d, INF);
+        dijkstra(X);
+        for(int i = 1; i <= N; i++) {
+            go[i] += d[i];
+        }
+        System.out.println(Arrays.stream(go).max().getAsInt());
     }
 
-    public static int bfs() {
-        Queue<Node> q = new LinkedList<>();
-        q.offer(new Node(0, 0, 1, false));
-        visited[0][0][0] = true;
+    public static void dijkstra(int start) {
+        PriorityQueue<Node> pq = new PriorityQueue<>();
+        d[start] = 0;
+        pq.offer(new Node(start, 0));
 
-        while(!q.isEmpty()) {
-            Node node = q.poll();
-            int x = node.getX();
-            int y = node.getY();
-            int cnt = node.getCnt();
-            boolean destroyed = node.isDestroyed();
+        while(!pq.isEmpty()) {
+            Node node = pq.poll();
+            int now = node.index;
+            int dist = node.distance;
 
-            if(x == N-1 && y == M-1) {return cnt;}
-            for(int i = 0; i < 4; i++) {
-                int nx = x + dx[i];
-                int ny = y + dy[i];
+            if(d[now] < dist) {continue;}
 
-                if(nx < 0 || nx >= N || ny < 0 || ny >= M) {continue;}
-                //0일 때
-                if(graph[nx][ny] == 0) {
-                    //부수지 않았을 때
-                    if(!destroyed && !visited[nx][ny][0]) {
-                        q.offer(new Node(nx, ny, cnt+1, false));
-                        visited[nx][ny][0] = true;
-                    }
-                    else if(!destroyed && !visited[nx][ny][1]){
-                        q.offer(new Node(nx, ny, cnt+1, true));
-                        visited[nx][ny][1] = true;
-                    }
-                }
-                else {
-                    if(!destroyed) {
-                        q.offer(new Node(nx, ny, cnt+1, true));
-                        visited[nx][ny][1] = true;
-                    }
+            for(int i = 0; i < graph.get(now).size(); i++) {
+                int cost = d[now] + graph.get(now).get(i).distance;
+
+                if(cost < d[graph.get(now).get(i).index]) {
+                    d[graph.get(now).get(i).index] = cost;
+                    pq.offer(new Node(graph.get(now).get(i).index, cost));
                 }
             }
         }
-        return -1;
     }
 }
