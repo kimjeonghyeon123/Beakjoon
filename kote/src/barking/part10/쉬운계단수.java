@@ -1,11 +1,13 @@
 package barking.part10;
-
 /**
- * 45656
- * 인접한 수가 1차이
- * 길이가 N인 총 계단 수
- * d[i][j] : i자리 자릿값 j
+ * 계단수:
+ * 인접한 모든 자리의 차이가 1
+ * 1 : 9개
+ * 2 : 0일땐 안셈, 9일때 안셈
+ * 3 :
  *
+ * d[i][j]는 i자리 j일때 경우의 수
+ * d[i][j] = d[i-1][j-1] + d[i-1][j+1]
  */
 
 import java.io.*;
@@ -16,30 +18,20 @@ public class 쉬운계단수 {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
         int N = Integer.parseInt(br.readLine());
-        long[][] d = new long[N + 1][10];
+        long[][] d = new long[N+1][10];
 
-        for(int i = 1; i < 10; i++) {
-            d[1][i] = 1;
+        for(int j = 1; j < 10; j++) {
+            d[1][j] = 1L;
         }
 
-        for(int i = 2; i <= N; i++) {
-            for(int j = 0; j < 10; j++) {
-                if(j==0) {
-                    d[i][0] = d[i-1][1];
-                }
-                else if(j==9) {
-                    d[i][9] = d[i-1][8];
-                }
-                else {
-                    d[i][j] = d[i-1][j-1] + d[i-1][j+1];
-                }
+        for(int i = 2; i < N+1; i++) {
+            d[i][0] = d[i-1][1];
+            d[i][9] = d[i-1][8];
+            for(int j = 1; j <= 8; j++) {
+                d[i][j] = (d[i-1][j-1] + d[i-1][j+1]) % 1000000000;
             }
         }
 
-        int sum = 0;
-        for(int i = 0; i < 10; i++) {
-            sum += d[N][i];
-        }
-        System.out.println(sum);
+        System.out.println(Arrays.stream(d[N]).sum()%1000000000);
     }
 }
