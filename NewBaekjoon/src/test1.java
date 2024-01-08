@@ -1,15 +1,13 @@
 /**
- * MooTube에 1~N 번호가 붙여진 동영상을 올려놓음
- * 연관 동영상 리스트 만들기
- * N-1 개의 동영상 쌍을 골라서 직접 유사도 계산
- * 유사도를 최솟값
- * 유사도가 K 이상인 모든 영상 추천
+ * MooTube
+ * 1~N 번호
+ * 유사도 :
  * (1,2) = 3
  * (2,3) = 2
  * (2,4) = 4
- * (a, b) = ?
- * 1) (a,b) = Math.min((k, b), (a, b))  k는 1~N까지
- *      - (a,k) or (k,a) 조사해서 값이 있는지 조사
+ * ->
+ * 큐 : (1,I)
+ * 팝 : (1,0) -> 연결된 노드 : (1,2)
  */
 
 import java.io.*;
@@ -17,7 +15,6 @@ import java.util.*;
 
 class Node {
     int index, distance;
-
     public Node(int index, int distance) {
         this.index = index;
         this.distance = distance;
@@ -35,15 +32,13 @@ public class test1 {
         for(int i = 0; i <= N; i++) {
             graph[i] = new ArrayList<>();
         }
-
         for(int i = 0; i < N-1; i++) {
             st = new StringTokenizer(br.readLine());
-            int p = Integer.parseInt(st.nextToken());
-            int q = Integer.parseInt(st.nextToken());
-            int r = Integer.parseInt(st.nextToken());
-
-            graph[p].add(new Node(q, r));
-            graph[q].add(new Node(p, r));
+            int a = Integer.parseInt(st.nextToken());
+            int b = Integer.parseInt(st.nextToken());
+            int c = Integer.parseInt(st.nextToken());
+            graph[a].add(new Node(b, c));
+            graph[b].add(new Node(a, c));
         }
 
         StringBuilder sb = new StringBuilder();
@@ -60,6 +55,7 @@ public class test1 {
             int ans = 0;
             while(!q.isEmpty()) {
                 Node now = q.poll();
+
                 for(Node next : graph[now.index]) {
                     if(!visited[next.index] && next.distance >= k) {
                         q.offer(next);
@@ -68,11 +64,9 @@ public class test1 {
                     }
                 }
             }
-
             sb.append(ans).append("\n");
         }
-
-        System.out.println(sb.toString());
+        System.out.print(sb.toString());
     }
 }
 
