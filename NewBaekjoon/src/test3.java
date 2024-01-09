@@ -19,9 +19,8 @@ import java.io.*;
 import java.util.*;
 
 class Horse {
-    int index, x, y, dx, dy;
-    public Horse(int index, int x, int y, int dx, int dy) {
-        this.index = index;
+    int x, y, dx, dy;
+    public Horse(int x, int y, int dx, int dy) {
         this.x = x;
         this.y = y;
         this.dx = dx;
@@ -44,8 +43,8 @@ public class test3 {
             }
         }
         Deque<Integer>[][] list = new Deque[N+1][N+1];
-        for(int i = 0; i <= N; i++) {
-            for(int j = 0; j <= N; j++) {
+        for(int i = 1; i <= N; i++) {
+            for(int j = 1; j <= N; j++) {
                 list[i][j] = new LinkedList<>();
             }
         }
@@ -72,46 +71,47 @@ public class test3 {
                     dx = 1;
                     break;
             }
-            horse[i] = new Horse(i, x, y, dx, dy);
+            horse[i] = new Horse(x, y, dx, dy);
             list[x][y].offerLast(i);
             q.offer(horse[i]);
         }
 
-        int result = 1;
-        while(!q.isEmpty()) {
-            int size = q.size();
-            for (int t = 0; t < size; t++) {
-                Horse node = q.poll();
+        int result = 0;
+        while(true) {
+            result++;
+            for(int i = 0; i < K; i++) {
+                int x = horse[i].x;
+                int y = horse[i].y;
 
-                int nx = node.x + node.dx;
-                int ny = node.y + node.dy;
+                // 맨 밑이 아니면 넘어가
+                if(list[x][y].peekFirst() != i) {continue;}
+
+                int nx = x + horse[i].dx;
+                int ny = y + horse[i].dy;
 
                 // 파란색이거나 벗어났을 경우
                 if(nx <= 0 || nx > N || ny <= 0 || ny > N || graph[nx][ny] == 2) {
-                    horse[node.index].dx = -node.dx;
-                    horse[node.index].dy = -node.dy;
-                    nx = node.x + horse[node.index].dx;
-                    ny = node.y + horse[node.index].dy;
+                    horse[i].dx = -horse[i].dx;
+                    horse[i].dy = -horse[i].dy;
+                    nx = x + horse[i].dx;
+                    ny = y + horse[i].dy;
                 }
 
-                System.out.println("(x, y) = (" + node.x + ", " + node.y + ")");
-                System.out.println("(nx, ny) = (" + nx + ", " + ny + ")");
-                // 한번 더 파란색이거나 벗어났을 경우
+                // 파란색이거나 벗어났을 경우
                 if(nx <= 0 || nx > N || ny <= 0 || ny > N || graph[nx][ny] == 2) {
                     continue;
                 }
-                // 흰색일 경우
-                else if(graph[nx][ny] == 0) {
-                    while(!list[node.x][node.y].isEmpty()) {
-                        int index = list[node.x][node.y].pollFirst();
+                else if (graph[nx][ny] == 0) {
+                    while(!list[x][y].isEmpty()) {
+                        int index = list[x][y].pollFirst();
                         list[nx][ny].offerLast(index);
                         horse[index].x = nx;
                         horse[index].y = ny;
                     }
                 }
-                else if(graph[nx][ny] == 1) {
-                    while(!list[node.x][node.y].isEmpty()) {
-                        int index = list[node.x][node.y].pollLast();
+                else if (graph[nx][ny] == 1) {
+                    while(!list[x][y].isEmpty()) {
+                        int index = list[x][y].pollLast();
                         list[nx][ny].offerLast(index);
                         horse[index].x = nx;
                         horse[index].y = ny;
@@ -119,22 +119,16 @@ public class test3 {
                 }
             }
 
-            // 말 검사
-            for (int i = 0; i < K; i++) {
+            for(int i = 0; i < K; i++) {
                 if(list[horse[i].x][horse[i].y].size() >= 4) {
-                    break;
-                }
-                if (list[horse[i].x][horse[i].y].peekFirst() == i) {
-                    q.offer(horse[i]);
+                    System.out.println(result);
+                    return;
                 }
             }
             if(result > 1000) {
+                System.out.println(-1);
                 break;
             }
-            System.out.println(result);
-            result++;
         }
-
-        System.out.println(result);
     }
 }
