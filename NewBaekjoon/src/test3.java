@@ -1,42 +1,26 @@
 /**
- * 체스판 : (N,N)
- * 말 개수 : K개
- * 하나의 말 위에 다른 말 오릴 수 있음
- * 체스판 색 : 흰, 빨, 파
- * 시작 : 체스판 위에 말 K개, 이동 방향 정해짐
- * 1번 말부터 K번 말까지 순서대로 이동
- * 한 말이 이동할 때 가장 아래에 있는 말만 이동가능 올려진 말을 자동 이동
- * 말이 있는 곳으로 가면 위로 쌓임 4개 이상이 되면 종료
- *
- * 흰색 :
- *  - 이동
- *  - 말이 있을 경우 맨 위에 가장 위에 쌓음
- *  - ex) a,b,c -> d,e  ---> d,e,a,b,c
- *
- * 빨강색 :
- *  - ex) a,b,c -> 0  ----> c,b,a
- *  - ex) a,d,f,g -> e,c,b ----> e,c,b,g,f,d,a
- *
- * 파란색 :
- *  - 말의 이동 방향을 반대로하고 한 칸 이동
- *  - 그 칸이 파란색인 경우 이동하지 않고 방향만 반대로 바꿈
- *  - 다시 자기 칸으로 돌아오는 것
- *  - 체스판을 벗어난 경우도 마찬가지임
- *  - 방향을 반대로 바꾼 상태로 들어옴
- *
- *  흰색일 경우 이동하고 그 위에 뭐가 있는지 검사하고 검사했으면 위에 올려
- *  그 위에 뭐가 있는지 검사하려면 list.add() 하면 됨
- *
- *  체스판 위에 올려놓고 그 위에 뭐가 있는지 검사하자 그래프가 두개 있는 게 편할 듯?
- *
+ * 체스판
+ * - 이동하려는 체스판의 색깔
+ * - 말 배열 만들어서 말 위치 업데이트하자
+ * - 흰색
+ *      - 그 칸 위에 올려놓음
+ * - 빨강색
+ *      - 그 칸 위에 거꾸로 올려놓음
+ * - 파란색이거나 벗어났을 경우
+ *      - 반대 방향으로 한 칸 이동
+ *          - 파란색이거나 벗어났을 경우
+ *              - 제자리에서 방향만 반대 방향으로 바꿈
+ *  맨 처음 큐에 순서대로 담음
+ *  1번 말부터 그 위치에 자기자신이 가장 아래에 있는지 검사하고 아래에 있는 것만 큐에 넣음
+ *  데큐로 만들자
  */
 
 import java.io.*;
 import java.util.*;
 
-class Node3 {
-    int index,x,y,dx,dy;
-    public Node3(int index, int x, int y, int dx, int dy) {
+class Horse {
+    int index, x, y, dx, dy;
+    public Horse(int index, int x, int y, int dx, int dy) {
         this.index = index;
         this.x = x;
         this.y = y;
@@ -53,85 +37,104 @@ public class test3 {
         int K = Integer.parseInt(st.nextToken());
 
         int[][] graph = new int[N+1][N+1];
-
         for(int i = 1; i <= N; i++) {
             st = new StringTokenizer(br.readLine());
             for(int j = 1; j <= N; j++) {
                 graph[i][j] = Integer.parseInt(st.nextToken());
             }
         }
-
-        Deque<Node3>[][] list = new LinkedList[N+1][N+1];
+        Deque<Integer>[][] list = new Deque[N+1][N+1];
         for(int i = 0; i <= N; i++) {
             for(int j = 0; j <= N; j++) {
                 list[i][j] = new LinkedList<>();
             }
         }
 
-        Queue<Node3> q = new LinkedList<>();
-        for(int i = 1; i <= K; i++) {
+        Queue<Horse> q = new LinkedList<>();
+        Horse[] horse = new Horse[K];
+        for(int i = 0; i < K; i++) {
             st = new StringTokenizer(br.readLine());
             int x = Integer.parseInt(st.nextToken());
             int y = Integer.parseInt(st.nextToken());
             int d = Integer.parseInt(st.nextToken());
-            if(d == 1) {
-                q.offer(new Node3(i, x, y, 0, 1));
-                list[x][y].offerLast(new Node3(i, x, y, 0, 1));
+            int dx = 0, dy = 0;
+            switch(d) {
+                case 1:
+                    dy = 1;
+                    break;
+                case 2:
+                    dy = -1;
+                    break;
+                case 3:
+                    dx = -1;
+                    break;
+                case 4:
+                    dx = 1;
+                    break;
             }
-            else if(d == 2) {
-                q.offer(new Node3(i, x, y, 0, -1));
-                list[x][y].offerLast(new Node3(i, x, y, 0, -1));
-            }
-            else if(d == 3) {
-                q.offer(new Node3(i, x, y, -1, 0));
-                list[x][y].offerLast(new Node3(i, x, y, -1, 0));
-            }
-            else if(d == 4) {
-                q.offer(new Node3(i, x, y, 1, 0));
-                list[x][y].offerLast(new Node3(i, x, y, 1, 0));
-            }
-
+            horse[i] = new Horse(i, x, y, dx, dy);
+            list[x][y].offerLast(i);
+            q.offer(horse[i]);
         }
 
+        int result = 1;
         while(!q.isEmpty()) {
-            Node3 node = q.poll();
-            int x = node.x;
-            int y = node.y;
-            int dx = node.dx;
-            int dy = node.dy;
+            int size = q.size();
+            for (int t = 0; t < size; t++) {
+                Horse node = q.poll();
 
-            int nx = x + dx;
-            int ny = y + dy;
+                int nx = node.x + node.dx;
+                int ny = node.y + node.dy;
 
-            // 밖에 나갔을 경우
-            boolean out = false;
-            if(nx <= 0 || nx > N || ny <= 0 || ny > N) {
-                dx = -dx;
-                dy = -dy;
-                nx = x;
-                nx = y;
-                out = true;
-            }
+                // 파란색이거나 벗어났을 경우
+                if(nx <= 0 || nx > N || ny <= 0 || ny > N || graph[nx][ny] == 2) {
+                    horse[node.index].dx = -node.dx;
+                    horse[node.index].dy = -node.dy;
+                    nx = node.x + horse[node.index].dx;
+                    ny = node.y + horse[node.index].dy;
+                }
 
-            // 흰색
-            if(graph[nx][ny] == 0 && !out) {
-                while(!list[x][y].isEmpty()) {
-                    list[nx][ny].offerLast(list[x][y].pollFirst());
+                System.out.println("(x, y) = (" + node.x + ", " + node.y + ")");
+                System.out.println("(nx, ny) = (" + nx + ", " + ny + ")");
+                // 한번 더 파란색이거나 벗어났을 경우
+                if(nx <= 0 || nx > N || ny <= 0 || ny > N || graph[nx][ny] == 2) {
+                    continue;
+                }
+                // 흰색일 경우
+                else if(graph[nx][ny] == 0) {
+                    while(!list[node.x][node.y].isEmpty()) {
+                        int index = list[node.x][node.y].pollFirst();
+                        list[nx][ny].offerLast(index);
+                        horse[index].x = nx;
+                        horse[index].y = ny;
+                    }
+                }
+                else if(graph[nx][ny] == 1) {
+                    while(!list[node.x][node.y].isEmpty()) {
+                        int index = list[node.x][node.y].pollLast();
+                        list[nx][ny].offerLast(index);
+                        horse[index].x = nx;
+                        horse[index].y = ny;
+                    }
                 }
             }
-            // 빨간색
-            else if(graph[nx][ny] == 1) {
 
-            }
-            // 파란색
-            else {
-                if(out) {
-
+            // 말 검사
+            for (int i = 0; i < K; i++) {
+                if(list[horse[i].x][horse[i].y].size() >= 4) {
+                    break;
                 }
-                else {
-
+                if (list[horse[i].x][horse[i].y].peekFirst() == i) {
+                    q.offer(horse[i]);
                 }
             }
+            if(result > 1000) {
+                break;
+            }
+            System.out.println(result);
+            result++;
         }
+
+        System.out.println(result);
     }
 }
