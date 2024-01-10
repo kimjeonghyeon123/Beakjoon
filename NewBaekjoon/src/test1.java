@@ -13,14 +13,15 @@
 import java.io.*;
 import java.util.*;
 
-class Node {
-    int index, distance;
-    public Node(int index, int distance) {
-        this.index = index;
-        this.distance = distance;
-    }
-}
+
 public class test1 {
+    static class Node {
+        int index, distance;
+        public Node(int index, int distance) {
+            this.index = index;
+            this.distance = distance;
+        }
+    }
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 

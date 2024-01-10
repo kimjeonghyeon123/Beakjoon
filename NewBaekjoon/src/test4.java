@@ -24,13 +24,6 @@
 import java.io.*;
 import java.util.*;
 
-class Spaceship {
-    int index, distance;
-    public Spaceship(int index, int distance) {
-        this.index = index;
-        this.distance = distance;
-    }
-}
 public class test4 {
 
     public static int ans = Integer.MAX_VALUE;

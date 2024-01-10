@@ -18,16 +18,17 @@
 import java.io.*;
 import java.util.*;
 
-class Horse {
-    int x, y, dx, dy;
-    public Horse(int x, int y, int dx, int dy) {
-        this.x = x;
-        this.y = y;
-        this.dx = dx;
-        this.dy = dy;
-    }
-}
 public class test3 {
+
+    static class Horse {
+        int x, y, dx, dy;
+        public Horse(int x, int y, int dx, int dy) {
+            this.x = x;
+            this.y = y;
+            this.dx = dx;
+            this.dy = dy;
+        }
+    }
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
