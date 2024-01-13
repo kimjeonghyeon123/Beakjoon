@@ -102,6 +102,9 @@ public class 컨베이어벨트위의로봇 {
             if(start.weight >= 1) {
                 start.weight--;
                 start.robot = true;
+                if(start.weight == 0) {
+                    cnt++;
+                }
             }
 
             if(cnt >= K) { break; }
