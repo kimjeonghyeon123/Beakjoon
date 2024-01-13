@@ -1,4 +1,4 @@
-/**
+package test; /**
  * N X M
  * int[][] graph = new int[N][M];
  * 적어도 두 변 이상이 접한 것은 1시간 안에 녹음
