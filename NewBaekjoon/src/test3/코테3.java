@@ -1,3 +1,5 @@
+package test3;
+
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -51,7 +53,7 @@ public class 코테3 {
             for(int i = 0; i < jobs.length; i++) {
                 if(!iswork[i] && jobs[i][0] < time) {
                     iswork[i] = true;
-                    q.offer()
+
                 }
             }
         }

@@ -1,3 +1,5 @@
+package test3;
+
 import java.util.Stack;
 
 /**
@@ -70,7 +72,7 @@ public class 코테1 {
                 answer[i-1] += s[i].pop().money;
             }
 //            while(!s[i].isEmpty()) {
-//                Node node = s[i].pop();
+//                test3.Node node = s[i].pop();
 //                boolean isAdd = true;
 //                for(int j = 0; j < abnormal.length; j++) {
 //                    if(node.index == abnormal[j]) {

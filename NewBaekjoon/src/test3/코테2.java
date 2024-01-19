@@ -1,3 +1,5 @@
+package test3;
+
 import java.util.Arrays;
 
 /**
@@ -86,9 +88,6 @@ public class 코테2 {
                     }
                 }
             }
-        }
-        else if {
-
         }
     }
 }
