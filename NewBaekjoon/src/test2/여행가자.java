@@ -1,27 +1,25 @@
 package test2;
 
 /**
- * 도시 N개
- * 길이 있을수도 없을수도 있음 - 다익스트라
- * 여행 일정이 주어졌을 때 경로가 가능한 것인지 알아보자
- *
- * 1에서 2갈 수 있는지 2에서 3갈 수 있는지
+ * 도시 N 개
+ * 여행 경로 가능한지?
  */
 
 import java.io.*;
 import java.util.*;
 
 public class 여행가자 {
-    public static final int INF = Integer.MAX_VALUE;
+    public static int N, M;
+    public static int[][] graph;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st;
 
-        int N = Integer.parseInt(br.readLine());
-        int M = Integer.parseInt(br.readLine());
+        N = Integer.parseInt(br.readLine());
+        M = Integer.parseInt(br.readLine());
 
-        int[][] graph = new int[N+1][N+1];
+        graph = new int[N+1][N+1];
         for(int i = 1; i <= N; i++) {
             st = new StringTokenizer(br.readLine());
             for(int j = 1; j <= N; j++) {
@@ -34,8 +32,8 @@ public class 여행가자 {
 
         for(int k = 1; k <= N; k++) {
             for(int i = 1; i <= N; i++) {
-                for (int j = 1; j <= N; j++) {
-                    if(graph[i][k] == 1 && graph[k][i] == 1) {
+                for(int j = 1; j <= N; j++) {
+                    if(graph[i][j] == 0 && graph[i][k] == 1 && graph[k][j] ==1) {
                         graph[i][j] = 1;
                     }
                 }
@@ -46,13 +44,12 @@ public class 여행가자 {
         int start = Integer.parseInt(st.nextToken());
         boolean cango = true;
         for(int i = 1; i < M; i++) {
-            int now = Integer.parseInt(st.nextToken());
-            if(graph[start][now] == 0) {
+            int root = Integer.parseInt(st.nextToken());
+            if(graph[start][root] == 0) {
                 cango = false;
                 break;
             }
         }
-
         if(cango) {
             System.out.println("YES");
         }

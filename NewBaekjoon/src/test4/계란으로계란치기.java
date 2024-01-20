@@ -20,53 +20,79 @@ import java.util.*;
 
 public class 계란으로계란치기 {
     public static class Egg {
-        int hp;
-        int weight;
-        public Egg(int hp, int weight) {
-            this.hp = hp;
-            this.weight = weight;
+        int s, w;
+        public Egg(int s, int w) {
+            this.s = s;
+            this.w = w;
         }
     }
     public static int N;
     public static Egg[] eggs;
+    public static int max = Integer.MIN_VALUE;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st;
 
         N = Integer.parseInt(br.readLine());
         eggs = new Egg[N];
         for(int i = 0; i < N; i++) {
-            StringTokenizer st = new StringTokenizer(br.readLine());
-            int hp = Integer.parseInt(st.nextToken());
-            int weight = Integer.parseInt(st.nextToken());
-            eggs[i] = new Egg(hp, weight);
+            st = new StringTokenizer(br.readLine());
+            int s = Integer.parseInt(st.nextToken());
+            int w = Integer.parseInt(st.nextToken());
+            eggs[i] = new Egg(s, w);
         }
 
-
+        dfs(0);
+        System.out.println(max);
     }
 
+    // x 계란 차례
     public static void dfs(int x) {
-        if(x == N-1) {
+        if(x == N) {
+            int cnt = 0;
+            for(int i = 0; i < N; i++) {
+                if(eggs[i].s <= 0) {
+                    cnt++;
+                }
+            }
+            max = Math.max(max, cnt);
             return;
         }
-        if(eggs[x].hp <= 0) {
+
+        Egg egg_in_hand = eggs[x];
+        // 손에 든 계란이 부셔져 있는 경우
+        if(egg_in_hand.s <= 0) {
             dfs(x+1);
+            return;
         }
-        boolean isbroke = false;
-        for(int i = x+1; i < N; i++) {
-            if(eggs[i].hp > 0) {
-                isbroke = true;
-                int temp1 = eggs[x].hp;
-                int temp2 = eggs[i].hp;
-                eggs[x].hp -= eggs[i].weight;
-                eggs[i].hp -= eggs[x].weight;
-                dfs(i);
-                eggs[x].hp = temp1;
-                eggs[i].hp = temp2;
+
+        // 다음 계란을 치자
+        // i번째 계란을 친 경우
+        boolean everyeggisbroke = true;
+        for(int i = 0; i < N; i++) {
+            if(i == x) {continue;}
+            Egg egg_next = eggs[i];
+            if(egg_next.s > 0) {
+                everyeggisbroke = false;
+                int egg_in_hand_s = egg_in_hand.s;
+                int egg_next_s = egg_next.s;
+                egg_in_hand.s -= egg_next.w;
+                egg_next.s -= egg_in_hand.w;
+                dfs(x+1);
+                egg_in_hand.s = egg_in_hand_s;
+                egg_next.s = egg_next_s;
             }
         }
-        if(!isbroke) {
-
+        if(everyeggisbroke) {
+            int cnt = 0;
+            for(int i = 0; i < N; i++) {
+                if(eggs[i].s <= 0) {
+                    cnt++;
+                }
+            }
+            max = Math.max(max, cnt);
+            return;
         }
     }
 }
