@@ -1,34 +1,29 @@
 package 코테;
 
 /**
- * N*N 목초지
- * 일부는 길을 건너야 됨
- * K마리 소가 존의 농장에 있음
  *
- * 어떤 소는 길을 건너지 않으면 못 만남
- * 몇 쌍인지?
- * (2,2) <-> (2,3) = INF
- * (3,3) <-> (3,2) = INF
- *
- * 0 1 2
- * 3 4 5
- * 6 7 8
- *
- * (i,j) = i*N + j
- *
- * 4번 <-> 5번
- * 8번 <-> </->
- * 1 더하거나 뺀 경우는 같음
- * N 빼거나 같은 경우는 같음
  */
 
 import java.io.*;
+import java.lang.reflect.Array;
 import java.util.*;
 
 public class 소가길을건너간이유 {
+    public static class Node {
+        int x, y;
+        public Node(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+        @Override
+        public boolean equals(Object o) {
+            Node node = (Node) o;
+            return x == node.x && y == node.y;
+        }
+    }
     public static int N, K, R;
-    public static ArrayList<ArrayList<Integer>> graph = new ArrayList<>();
-    public static boolean[] visited;
+    public static int[] dx = {0,0,-1,1};
+    public static int[] dy = {-1,1,0,0};
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -39,80 +34,74 @@ public class 소가길을건너간이유 {
         K = Integer.parseInt(st.nextToken());
         R = Integer.parseInt(st.nextToken());
 
-        for(int i = 0; i < N*N; i++) {
-            graph.add(new ArrayList<>());
-        }
-        for(int i = 0; i < N*N; i++) {
-            if(i - 1 >= 0) {
-                graph.get(i).add(i-1);
-            }
-            if(i - N >= 0) {
-                graph.get(i).add(i-N);
-            }
-            if(i + 1 < N*N) {
-                graph.get(i).add(i+1);
-            }
-            if(i + N < N*N) {
-                graph.get(i).add(i+N);
-            }
-        }
-        for(int i = 0; i < R; i++) {
-            st = new StringTokenizer(br.readLine());
-            int x1 = Integer.parseInt(st.nextToken())-1;
-            int y1 = Integer.parseInt(st.nextToken())-1;
-            int x2 = Integer.parseInt(st.nextToken())-1;
-            int y2 = Integer.parseInt(st.nextToken())-1;
-            int x = x1 * N + y1;
-            int y = x2 * N + y2;
-            int size = graph.get(x).size();
-            for (int j = 0; j < size; j++) {
-                if(y == graph.get(x).get(j)) {
-                    graph.get(x).remove(j);
-                    break;
-                }
-            }
-            size = graph.get(y).size();
-            for (int j = 0; j < size; j++) {
-                if(x == graph.get(y).get(j)) {
-                    graph.get(y).remove(j);
-                    break;
-                }
+        int[][] graph = new int[N+1][N+1];
+        ArrayList<Node>[][] bridges = new ArrayList[N+1][N+1];
+        for(int i = 1; i <= N; i++) {
+            for(int j = 1; j <= N; j++) {
+                bridges[i][j] = new ArrayList<>();
             }
         }
 
-        int[] arr = new int[K];
+        for(int i = 0; i <R; i++) {
+            st = new StringTokenizer(br.readLine());
+            int r1 = Integer.parseInt(st.nextToken());
+            int c1 = Integer.parseInt(st.nextToken());
+            int r2 = Integer.parseInt(st.nextToken());
+            int c2 = Integer.parseInt(st.nextToken());
+            bridges[r1][c1].add(new Node(r2, c2));
+            bridges[r2][c2].add(new Node(r1, c1));
+        }
+
+        ArrayList<Node> cows = new ArrayList<>();
         for(int i = 0; i < K; i++) {
             st = new StringTokenizer(br.readLine());
-            int x = Integer.parseInt(st.nextToken()) - 1;
-            int y = Integer.parseInt(st.nextToken()) - 1;
-            arr[i] = x * N + y;
+            int x = Integer.parseInt(st.nextToken());
+            int y = Integer.parseInt(st.nextToken());
+            cows.add(new Node(x, y));
+            graph[x][y] = 1;
         }
 
-        int cnt = 0;
-        for(int i = 0; i < N-1; i++) {
-            dijkstra(arr[i]);
-            for(int j = i+1; j < N; j++) {
-                if(!visited[arr[j]]) {
-                    cnt++;
+        int answer = 0;
+
+        for(int t = 0; t < K; t++) {
+            Node cow = cows.get(t);
+
+            int count = 0;
+
+            boolean[][] visited = new boolean[N+1][N+1];
+            boolean[][] cowContacted = new boolean[K][K];
+            Queue<Node> q = new LinkedList<>();
+
+            q.offer(cow);
+            visited[cow.x][cow.y] = true;
+
+            while(!q.isEmpty()) {
+                Node node = q.poll();
+
+                if(graph[node.x][node.y] == 1) {
+                    for (int j = t+1; j < K; j++) {
+                        Node nextCow = cows.get(j);
+                        if(node == nextCow) {
+                            cowContacted[t][j] = true;
+                            break;
+                        }
+                    }
+                }
+
+                for(int i = 0; i < 4; i++) {
+                    int nx = node.x + dx[i];
+                    int ny = node.y + dy[i];
+
+                    if(nx < 0 || nx >= N || ny < 0 || ny >= N || visited[nx][ny]) {continue;}
+                    if(bridges[node.x][node.y].contains(new Node(nx, ny))) {continue;}
+                    visited[nx][ny] = true;
+                    q.offer(new Node(nx, ny));
                 }
             }
-        }
-        System.out.println(cnt);
-    }
 
-    public static void dijkstra(int start) {
-        Queue<Integer> q = new LinkedList<>();
-
-        visited = new boolean[N*N];
-        q.offer(start);
-        visited[start] = true;
-
-        while(!q.isEmpty()) {
-            int now = q.poll();
-            for(int next : graph.get(now)) {
-                if(!visited[next]) {
-                    q.offer(next);
-                    visited[next] = true;
+            for(int i = t+1; i < K; i++) {
+                if(!cowContacted[t][i]) {
+                    answer++;
                 }
             }
         }
