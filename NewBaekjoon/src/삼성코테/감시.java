@@ -5,22 +5,20 @@ import java.util.*;
 
 public class 감시 {
     public static class Node {
-        int x, y, dir;
-        public Node(int x, int y, int dir) {
+        int x, y, cctvtype;
+        public Node(int x, int y, int cctvtype) {
             this.x = x;
             this.y = y;
-            this.dir = dir;
+            this.cctvtype = cctvtype;
         }
     }
     public static int N, M;
     public static int[][] graph;
-    public static ArrayList<Node> cctvlist = new ArrayList<>();
     public static boolean[][] cansee;
-    public static int max = Integer.MIN_VALUE;
-    // 북동남서
-    public static boolean[] checkdirection = new boolean[4];
+    public static ArrayList<Node> cctvlist = new ArrayList<>();
     public static int[] dx = {-1,0,1,0};
     public static int[] dy = {0,1,0,-1};
+    public static int min = Integer.MAX_VALUE;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -29,6 +27,7 @@ public class 감시 {
         st = new StringTokenizer(br.readLine());
         N = Integer.parseInt(st.nextToken());
         M = Integer.parseInt(st.nextToken());
+
         graph = new int[N][M];
         cansee = new boolean[N][M];
         for(int i = 0; i < N; i++) {
@@ -37,35 +36,38 @@ public class 감시 {
                 graph[i][j] = Integer.parseInt(st.nextToken());
                 if(graph[i][j] != 0 && graph[i][j] != 6) {
                     cctvlist.add(new Node(i, j, graph[i][j]));
-                    cansee[i][j] = true;
                 }
-                if(graph[i][j] == 6) {
+                else if(graph[i][j] == 6) {
                     cansee[i][j] = true;
                 }
             }
         }
 
         dfs(0);
-        System.out.println(max);
+
+        System.out.println(min);
     }
 
-    //북동남서
     public static void dfs(int depth) {
         if(depth == cctvlist.size()) {
-            sum();
+            findsagak();
             return;
         }
 
         Node cctv = cctvlist.get(depth);
+        int x = cctv.x;
+        int y = cctv.y;
+        int cctvtype = cctv.cctvtype;
+
         boolean[][] cpyCansee = new boolean[N][M];
         for(int i = 0; i < N; i++) {
             cpyCansee[i] = cansee[i].clone();
         }
 
-        switch (cctv.dir) {
+        switch (cctvtype) {
             case 1:
                 for(int i = 0; i < 4; i++) {
-                    check(cctv.x, cctv.y, i);
+                    watchcctv(x, y, i);
                     dfs(depth+1);
                     for(int k = 0; k < N; k++) {
                         cansee[k] = cpyCansee[k].clone();
@@ -74,8 +76,8 @@ public class 감시 {
                 break;
             case 2:
                 for(int i = 0; i < 2; i++) {
-                    check(cctv.x, cctv.y, i);
-                    check(cctv.x, cctv.y, i+2);
+                    watchcctv(x, y, i);
+                    watchcctv(x, y, i+2);
                     dfs(depth+1);
                     for(int k = 0; k < N; k++) {
                         cansee[k] = cpyCansee[k].clone();
@@ -84,8 +86,8 @@ public class 감시 {
                 break;
             case 3:
                 for(int i = 0; i < 4; i++) {
-                    check(cctv.x, cctv.y, i);
-                    check(cctv.x, cctv.y, (i+1)%4);
+                    watchcctv(x, y, i);
+                    watchcctv(x, y, (i+1)%4);
                     dfs(depth+1);
                     for(int k = 0; k < N; k++) {
                         cansee[k] = cpyCansee[k].clone();
@@ -94,9 +96,9 @@ public class 감시 {
                 break;
             case 4:
                 for(int i = 0; i < 4; i++) {
-                    check(cctv.x, cctv.y, i);
-                    check(cctv.x, cctv.y, (i+1)%4);
-                    check(cctv.x, cctv.y, (i+2)%4);
+                    watchcctv(x, y, i);
+                    watchcctv(x, y, (i+1)%4);
+                    watchcctv(x, y, (i+2)%4);
                     dfs(depth+1);
                     for(int k = 0; k < N; k++) {
                         cansee[k] = cpyCansee[k].clone();
@@ -105,7 +107,7 @@ public class 감시 {
                 break;
             case 5:
                 for(int i = 0; i < 4; i++) {
-                    check(cctv.x, cctv.y, i);
+                    watchcctv(x, y, i);
                 }
                 dfs(depth+1);
                 for(int k = 0; k < N; k++) {
@@ -113,20 +115,19 @@ public class 감시 {
                 }
                 break;
         }
-
     }
 
-    public static void check(int x, int y, int dir) {
+    public static void watchcctv(int x, int y, int dir) {
         int nx = x;
         int ny = y;
-        while(graph[nx][ny] != 6 && 0 <= nx && nx < N && 0 <= ny && ny < M) {
+        while(0 <= nx && nx < N && 0 <= ny && ny < M && graph[nx][ny] != 6) {
+            cansee[nx][ny] = true;
             nx += dx[dir];
             ny += dy[dir];
-            cansee[nx][ny] = true;
         }
     }
 
-    public static void sum() {
+    public static void findsagak() {
         int result = 0;
         for(int i = 0; i < N; i++) {
             for(int j = 0; j < M; j++) {
@@ -135,18 +136,6 @@ public class 감시 {
                 }
             }
         }
-        max = Math.max(max, result);
+        min = Math.min(min, result);
     }
 }
-/**
- * 사각 지대의 최소크기 구하기
- * 1일 때
- * 1 cctv
- * 2 cctv
- * 3 cctv
- *
- * 1 cctv 왼쪽 검사
- * 2 cctv 왼쪽 검사 오른쪽검사
- * 3 cctv 위쪽 검사 오른쪽검사
- *
- */
