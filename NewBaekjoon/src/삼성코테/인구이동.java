@@ -11,9 +11,10 @@ public class 인구이동 {
             this.y = y;
         }
     }
-    public static int N, L, R;
+    public static int N, L, R, sum;
     public static int[][] graph;
-    public static int[][] visited;
+    public static boolean[][] visited;
+    public static Stack<Node> stack = new Stack<>();
     public static int[] dx = {0,0,-1,1};
     public static int[] dy = {-1,1,0,0};
 
@@ -36,58 +37,58 @@ public class 인구이동 {
         }
 
         int result = 0;
-        int cnt = 1;
         while(true) {
-            visited = new int[N][N];
-            cnt = 1;
+            visited = new boolean[N][N];
+            boolean ismoved = false;
             for (int i = 0; i < N; i++) {
                 for (int j = 0; j < N; j++) {
-                    if (visited[i][j] == 0) {
-                        visited[i][j] = cnt;
-                        dfs(i, j, cnt);
-                        cnt++;
+                    if (!visited[i][j]) {
+                        sum = graph[i][j];
+                        stack.push(new Node(i, j));
+                        visited[i][j] = true;
+                        if(dfs(i, j)) {
+                            ismoved = true;
+                            find();
+                        }
+                        else {
+                            stack.pop();
+                        }
                     }
                 }
             }
 
-            find(cnt);
+            if(!ismoved) {
+                break;
+            }
             result++;
         }
+        System.out.println(result);
     }
 
-    public static void dfs(int x, int y, int cnt) {
+    public static boolean dfs(int x, int y) {
+        boolean ismoved = false;
         for(int i = 0; i < 4; i++) {
             int nx = x + dx[i];
             int ny = y + dy[i];
 
             if(nx < 0 || nx >= N || ny < 0 || ny >= N) {continue;}
             int cha = Math.abs(graph[nx][ny] - graph[x][y]);
-            if(visited[nx][ny] == 0 && L <= cha && cha <= R) {
-                visited[nx][ny] = cnt;
-                dfs(nx, ny, cnt);
+            if(!visited[nx][ny] && L <= cha && cha <= R) {
+                visited[nx][ny] = true;
+                stack.push(new Node(nx, ny));
+                sum += graph[nx][ny];
+                dfs(nx, ny);
+                ismoved = true;
             }
         }
+        return ismoved;
     }
 
-    public static void find(int cnt) {
-        Stack<Node> stack = new Stack<>();
-        for(int k = 1; k < cnt; k++) {
-            int sum = 0;
-            int size = 0;
-            for (int i = 0; i < N; i++) {
-                for (int j = 0; j < N; j++) {
-                    if(visited[i][j] == i) {
-                        sum += graph[i][j];
-                        size++;
-                        stack.push(new Node(i, j));
-                    }
-                }
-            }
-
-            while(!stack.isEmpty()) {
-                Node node = stack.pop();
-                graph[node.x][node.y] = sum / size;
-            }
+    public static void find() {
+        int size = stack.size();
+        while(!stack.isEmpty()) {
+            Node node = stack.pop();
+            graph[node.x][node.y] = sum / size;
         }
     }
 }
