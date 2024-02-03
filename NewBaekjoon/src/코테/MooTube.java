@@ -1,65 +1,37 @@
 package 코테;
 
-/**
- * 무튜브 : 1~N
- * 유사도
- * N-1개의 동영상
- * 동영상 V를 보고 있을 때, 유사도가 K이상인 동영상 추천해줌
- *
- * (1,2) : 3
- * (2,3) : 2
- * =
- * (1,3) : 2
- * for(int i = 0; i < N; i++) {
- *     for(int j = 0; j < N; j++) {
- *         if(i==j) continue;
- *         graph[i][j] = Math.min(graph[i][j], graph[i][k] + graph[k][i]
- *
- *     }
- * }
- */
-
 import java.io.*;
 import java.util.*;
 
 public class MooTube {
     public static class Node {
-        int indx, distance;
-        public Node(int indx, int distance) {
-            this.indx = indx;
+        int index, distance;
+        public Node(int index, int distance) {
+            this.index = index;
             this.distance = distance;
         }
     }
-    public static int N, Q;
-    public static int[][] graph;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st;
 
         st = new StringTokenizer(br.readLine());
-        N = Integer.parseInt(st.nextToken());
-        Q = Integer.parseInt(st.nextToken());
-        graph = new int[N+1][N+1];
+        int N = Integer.parseInt(st.nextToken());
+        int Q = Integer.parseInt(st.nextToken());
+
+        ArrayList<Node>[] graph = new ArrayList[N+1];
         for(int i = 0; i <= N; i++) {
-            Arrays.fill(graph[i], Integer.MAX_VALUE);
+            graph[i] = new ArrayList<>();
         }
+
         for(int i = 0; i < N-1; i++) {
             st = new StringTokenizer(br.readLine());
             int p = Integer.parseInt(st.nextToken());
             int q = Integer.parseInt(st.nextToken());
             int r = Integer.parseInt(st.nextToken());
-            graph[p][q] = r;
-            graph[q][p] = r;
-        }
-
-        for(int k = 1; k <= N; k++) {
-            for(int i = 1; i <= N; i++) {
-                for(int j = 1; j <= N; j++) {
-                    if(i == j) continue;
-                    graph[i][j] = Math.min(graph[i][j], Math.min(graph[i][k], graph[k][j]));
-                }
-            }
+            graph[p].add(new Node(q, r));
+            graph[q].add(new Node(p, r));
         }
 
         StringBuilder sb = new StringBuilder();
@@ -68,15 +40,33 @@ public class MooTube {
             int k = Integer.parseInt(st.nextToken());
             int v = Integer.parseInt(st.nextToken());
 
-            int cnt = 0;
-            for(int j = 1; j <= N; j++) {
-                if(j == v) continue;
-                if(graph[v][j] >= k) {
-                    cnt++;
+            boolean[] visited = new boolean[N+1];
+            visited[v] = true;
+            Queue<Node> q = new LinkedList<>();
+            q.offer(new Node(v, 0));
+
+            int ans = 0;
+            while(!q.isEmpty()) {
+                Node now = q.poll();
+
+                for(Node next : graph[now.index]) {
+                    if(!visited[next.index] && next.distance >= k) {
+                        q.offer(next);
+                        visited[next.index] = true;
+                        ans++;
+                    }
                 }
             }
-            sb.append(cnt).append("\n");
+            sb.append(ans).append("\n");
         }
-        System.out.println(sb.toString());
+        System.out.print(sb.toString());
     }
 }
+/**
+ * 1,2   2,3  ===?  1 -> 3
+ *
+ * 1검사
+ * 1과 직접 연결된 비디오들이 나옴
+ * 1과 직접 연결했을 때 d[] = 기록함
+ * 2와 연결된 것들 구함 3까지 거리 중 가장 짧은 거 구함
+ */

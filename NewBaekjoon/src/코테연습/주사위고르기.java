@@ -93,4 +93,7 @@ public class 주사위고르기 {
             }
         }
     }
+
+    public static class MooTube {
+    }
 }

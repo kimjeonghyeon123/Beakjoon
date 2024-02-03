@@ -1,5 +1,5 @@
 package test; /**
- * MooTube
+ * 코테연습.주사위고르기.MooTube
  * 1~N 번호
  * 유사도 :
  * (1,2) = 3
