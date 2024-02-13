@@ -36,12 +36,20 @@ public class 리코쳇로봇 {
             if(board[x].charAt(y) == 'G') {return cnt;}
 
             for(int i = 0; i < 4; i++) {
-                int nx = x + dx[i];
-                int ny = y + dy[i];
+                int nx = x;
+                int ny = y;
 
-                if(nx < 0 || nx >= n || ny < 0 || ny >= m) {continue;}
-                if(!visited[nx][ny] && board[nx].charAt(ny) != 'D') {
-                    q.offer(new Node(nx, ny,cnt + 1));
+                while(true) {
+                    nx += dx[i];
+                    ny += dy[i];
+                    if(nx < 0 || nx >= n || ny < 0 || ny >= m || board[nx].charAt(ny) == 'D') {
+                        nx -= dx[i];
+                        ny -= dy[i];
+                        break;
+                    }
+                }
+                if(!visited[nx][ny]) {
+                    q.offer(new Node(nx, ny, cnt+1));
                     visited[nx][ny] = true;
                 }
             }
